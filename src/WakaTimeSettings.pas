@@ -62,6 +62,9 @@ end;
 const
   WakaTimeConfigFile = '\.wakatime.cfg';
 
+  {$IFDEF DELPHI_13_0_FLORENCE}
+  WakaPluginLogFileName = 'wakatime-d13_0.log';
+  {$ENDIF}
   {$IFDEF DELPHI_12_0_ATHENS}
   WakaPluginLogFileName = 'wakatime-d12_0.log';
   {$ENDIF}
