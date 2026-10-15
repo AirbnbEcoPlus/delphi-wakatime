@@ -47,19 +47,40 @@ var
 
 {$R *.dfm}
 
+function GetIDEToolsMenu: TMenuItem;
+var
+  MainMenu: TMainMenu;
+  I: Integer;
+begin
+  Result := nil;
+  MainMenu := (BorlandIDEServices as INTAServices).MainMenu;
+  if Assigned(MainMenu) then
+  begin
+    for I := 0 to MainMenu.Items.Count - 1 do
+    begin
+      if SameText(MainMenu.Items[I].Name, 'ToolsMenu') then
+      begin
+        Result := MainMenu.Items[I];
+        Break;
+      end;
+    end;
+  end;
+end;
 
 procedure AddWakaTimeMenuItem;
 var
   ToolsMenu: TMenuItem;
 begin
   // Find the Tools menu.
-  ToolsMenu := (BorlandIDEServices as INTAServices).MainMenu.Items.Find('Tools');
+  ToolsMenu := GetIDEToolsMenu;
+  if Assigned(ToolsMenu) then
+  begin
+    // Create the WakaTime menu item.
+    WakaTimeMenuItem := TWakaTimeMenu.Create(ToolsMenu);
 
-  // Create the WakaTime menu item.
-  WakaTimeMenuItem := TWakaTimeMenu.Create(ToolsMenu);
-
-  // Add the WakaTime menu item to the Tools menu.
-  ToolsMenu.Add(WakaTimeMenuItem);
+    // Add the WakaTime menu item to the Tools menu.
+    ToolsMenu.Add(WakaTimeMenuItem);
+  end;
 end;
 
 procedure Register;
@@ -121,8 +142,9 @@ var
 begin
   if Assigned(WakaTimeMenuItem) then
   begin
-    ToolsMenu := (BorlandIDEServices as INTAServices).MainMenu.Items.Find('Tools');
-    ToolsMenu.Remove(WakaTimeMenuItem);
+    ToolsMenu := GetIDEToolsMenu;
+    if Assigned(ToolsMenu) then
+      ToolsMenu.Remove(WakaTimeMenuItem);
     WakaTimeMenuItem.Free;
   end;
 end;
@@ -144,7 +166,7 @@ begin
   MenuCreationTimer.Enabled := False;
 
   // Find the Tools menu.
-  ToolsMenu := (BorlandIDEServices as INTAServices).MainMenu.Items.Find('Tools');
+  ToolsMenu := GetIDEToolsMenu;
 
   if Assigned(ToolsMenu) then
    AddWakaTimeMenuItem
